@@ -7,11 +7,17 @@ trap_base_interface := class(creative_device):
 
 trap_inventory_manager := class(creative_device):
     @editable TodosOsScriptsArmadilha : []trap_base_interface = array{}
+    @editable DataHub : player_data_hub = player_data_hub{}
 
     var PlayersInvenciveis : [agent]logic = map{}
 
     NotificarColeta(ID_Coletado : int, Agent : agent) : void =
-        Print("Limpando inventários antigos (Exceto ID: {ID_Coletado})")
+        NomeDoItem := if (ID_Coletado = 1) then "Mina Terrestre"
+                    else if (ID_Coletado = 2) then "Spray de Tinta"
+                    else if (ID_Coletado = 3) then "Invencibilidade"
+                    else "Nenhum"
+        DataHub.AtualizarItem(Agent, NomeDoItem)
+
         for (Script : TodosOsScriptsArmadilha):
             if (Script.MyID <> ID_Coletado):
                 Script.ResetarInventarioPlayer(Agent)
@@ -21,16 +27,6 @@ trap_inventory_manager := class(creative_device):
             return Status
         return false
 
-    RemoverInvencibilidadeImediata(Agent : agent) : void =
-        if (set PlayersInvenciveis[Agent] = false) {}
-
     IniciarTimerInvencibilidade(Agent : agent, Tempo : float) : void =
-        spawn { TemporizadorInvencibilidade(Agent, Tempo) }
-
-    TemporizadorInvencibilidade(Agent : agent, Tempo : float)<suspends> : void =
-        if (set PlayersInvenciveis[Agent] = true):
-            Print("Player INVENCÍVEL contra armadilhas ativado!")
-            Sleep(Tempo)
-            if (StatusAtual := PlayersInvenciveis[Agent], StatusAtual = true):
-                if (set PlayersInvenciveis[Agent] = false):
-                    Print("A invencibilidade expirou.")
+        #Print("Timer iniciado")
+        Print("-")
