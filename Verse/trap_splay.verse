@@ -25,12 +25,12 @@ trap_spray_system := class(trap_base_interface):
 
     ResetarInventarioPlayer<override>(Agent : agent) : void =
         if (set TemItem[Agent] = false) {}
-        Print("Spray de Tinta descartado do inventário.")
+        #Print("Spray de Tinta descartado do inventário.")
 
     OnPlayerPickup(Agent : agent) : void =
         GerenciadorPai.NotificarColeta(MyID, Agent)
         if (set TemItem[Agent] = true):
-            Print("Spray de Tinta coletado! Aperte o botão para usar.")
+           # Print("Spray de Tinta coletado! Aperte o botão para usar.")
             PickupVisual.Hide()
             if (PickupVolume.TeleportTo[vector3{Z:= -5000.0}, IdentityRotation()]) {}
             spawn { RespawnPickup() }
@@ -38,7 +38,8 @@ trap_spray_system := class(trap_base_interface):
     OnPlayerPressButton(Agent : agent) : void =
         if (TemItem[Agent] = true):
             if (set TemItem[Agent] = false) {}
-            Print("Lançando Spray de Tinta manualmente!")
+            #Print("Lançando Spray de Tinta manualmente!")
+            GerenciadorPai.DataHub.AtualizarItem(Agent, "Nenhum")
             spawn { LancarSpray(Agent) }
 
     LancarSpray(Agent : agent)<suspends> : void =
@@ -60,9 +61,9 @@ trap_spray_system := class(trap_base_interface):
     OnPlayerHitTrap(Agent : agent) : void =
         StatusInvencivel : logic = GerenciadorPai.EstaInvencivel(Agent)
         if (StatusInvencivel = true):
-            Print("Splash cancelado! O jogador está imune.")
+            #Print("Splash cancelado! O jogador está imune.")
             return
-        Print("SPLASH! Tinta na tela.")
+        #Print("SPLASH! Tinta na tela.")
         HUD_SprayTinta.Show(Agent)
         TrapArmadaVisual.Hide()
         if (TrapArmadaVolume.TeleportTo[vector3{Z := -5000.0}, IdentityRotation()]) {}
