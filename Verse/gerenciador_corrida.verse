@@ -15,11 +15,10 @@ gerenciador_corrida_manual := class(creative_device):
     @editable Pontuador : score_manager_device = score_manager_device{}
     @editable FimDeJogo : end_game_device = end_game_device{}
     @editable VoltasNecessarias : int = 3
+    @editable DataHub : player_data_hub = player_data_hub{}
 
     var StatusJogadores : [agent]int = map{}
-    
     var ContagemCheckpoints : [agent][int]int = map{}
-
     var Handlers : []checkpoint_handler = array{}
 
     OnBegin<override>()<suspends> : void =
@@ -40,7 +39,7 @@ gerenciador_corrida_manual := class(creative_device):
             RegistrarPassagem(Agent, IndexTocado)
             ProcessarSucesso(Agent, IndexTocado)
         else:
-            Print("Checkpoint Incorreto!")
+            #Print("Checkpoint Incorreto!")
 
     RegistrarPassagem(Agent : agent, Index : int) : void =
         var MapaDoJogador : [int]int = map{}
@@ -51,18 +50,25 @@ gerenciador_corrida_manual := class(creative_device):
         
         if (set MapaDoJogador[Index] = AtualNoCheckpoint + 1):
             if (set ContagemCheckpoints[Agent] = MapaDoJogador):
-                Print("Checkpoint {Index + 1} visitado {AtualNoCheckpoint + 1} vezes")
+                #Print("Checkpoint {Index + 1} visitado {AtualNoCheckpoint + 1} vezes")
 
     ProcessarSucesso(Agent : agent, Index : int) : void =
         Pontuador.Activate(Agent)
         
+        var VoltaCalculada : int = 1
+        if (Mapa := ContagemCheckpoints[Agent], VezesNoPrimeiro := Mapa[0]):
+            set VoltaCalculada = VezesNoPrimeiro
+
+        CheckpointCalculado := Index + 1
+        DataHub.AtualizarProgressoCorrida(Agent, VoltaCalculada, CheckpointCalculado)
+
         if (Index = Checkpoints.Length - 1):
             if (Mapa := ContagemCheckpoints[Agent], VezesNoUltimo := Mapa[Index], VezesNoUltimo >= VoltasNecessarias):
                 Print("Corrida Finalizada!")
                 FimDeJogo.Activate(Agent)
             else:
                 if (set StatusJogadores[Agent] = 0):
-                    Print("Volta completada! Volte ao início.")
+                    #Print("Volta completada! Volte ao início.")
         else:
             if (set StatusJogadores[Agent] = Index + 1):
-                Print("Siga para o próximo!")
+                #Print("Siga para o próximo!")
