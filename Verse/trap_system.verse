@@ -28,27 +28,28 @@ trap_system_device := class(trap_base_interface):
 
     ResetarInventarioPlayer<override>(Agent : agent) : void =
         if (set PlayerArsenal[Agent] = 0) {}
-        Print("Mina descartada: Player pegou outra armadilha!")
+        #Print("Mina descartada: Player pegou outra armadilha!")
 
 
     OnPlayerPressSpace(Agent : agent) : void =
         if (Ammo := PlayerArsenal[Agent], Ammo > 0):
             if (set PlayerArsenal[Agent] = 0):
+                GerenciadorPai.DataHub.AtualizarItem(Agent, "Nenhum")
                 spawn { PlaceTrap(Agent) }
 
     OnPlayerPickup(Agent : agent) : void =
         StatusInvencivel : logic = GerenciadorPai.EstaInvencivel(Agent)
         if (StatusInvencivel = true):
-            Print("Splash cancelado! O jogador está imune.")
+            #Print("Splash cancelado! O jogador está imune.")
             return
         GerenciadorPai.NotificarColeta(MyID, Agent)
         if (set PlayerArsenal[Agent] = 1):
-            Print("Armadilha coletada! Movendo visual para longe.")
+            #Print("Armadilha coletada! Movendo visual para longe.")
             PickupVisual.Hide()
             if (PickupVisual.TeleportTo[vector3{Z:= -5000.0}, IdentityRotation()]):
-                Print("Visual enviado para o limbo.")
+                #Print("Visual enviado para o limbo.")
             if (PickupVolume.TeleportTo[vector3{Z:= -5000.0}, IdentityRotation()]):
-                Print("Volume de coleta desativado.")
+                #Print("Volume de coleta desativado.")
             
             spawn { RespawnPickup() }
 
@@ -72,14 +73,14 @@ trap_system_device := class(trap_base_interface):
     OnPlayerHitTrap(Agent : agent) : void =
         StatusInvencivel : logic = GerenciadorPai.EstaInvencivel(Agent)
         if (StatusInvencivel = true):
-            Print("Mina cancelado! O jogador está imune.")
+           # Print("Mina cancelado! O jogador está imune.")
             return
         if (FortChar := Agent.GetFortCharacter[]):
             Transform := FortChar.GetTransform()
             if (FortChar.TeleportTo[Transform.Translation, Transform.Rotation]):
-                Print("Impacto detectado: Veículo freado!")
+                #Print("Impacto detectado: Veículo freado!")
             TrapMinaVisual.Hide() 
             if (TrapMinaVolume.TeleportTo[vector3{Z := -5000.0}, IdentityRotation()]):
-                Print("Mina removida da pista.")
+                #Print("Mina removida da pista.")
             if (TrapMinaVisual.TeleportTo[vector3{Z := -5000.0}, IdentityRotation()]):
-                Print("Visual da mina removido da pista.")
+                #Print("Visual da mina removido da pista.")
